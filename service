@@ -1,0 +1,20 @@
+    public Book borrowBook(Long bookId) {
+        String userId = getUserId();
+        log.info("User={} attempting to borrow book id={}", userId, bookId);
+
+        Book book = repository.findById(bookId)
+                .orElseThrow(() -> {
+                    log.warn("User={} book not found: id={}", userId, bookId);
+                    return new ResourceNotFoundException("Book not found");
+                });
+
+        if (!book.isAvailable()) {
+            log.warn("User={} book already borrowed: id={}", userId, bookId);
+            throw new DuplicateResourceException("Book is already borrowed");
+        }
+
+        log.info("User={} successfully borrowed book id={}", userId, bookId);
+        book.setAvailable(false);
+        repository.save(book);
+        return book;
+    }
