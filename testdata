@@ -1,0 +1,14 @@
+INSERT INTO books (title, author, price, created_at) VALUES
+-- 🔴 TOO NEW (0–7 days → NOT allowed)
+('New Spring Boot Guide', 'John Doe', 500, CURRENT_DATE - INTERVAL '2 days'),
+('Fresh Java Book', 'Jane Smith', 450, CURRENT_DATE - INTERVAL '5 days'),
+
+-- 🟠 BETWEEN 1 WEEK AND 1 YEAR (NOT allowed)
+('Intermediate Java', 'Robert Martin', 600, CURRENT_DATE - INTERVAL '2 months'),
+('Spring Deep Dive', 'Craig Walls', 700, CURRENT_DATE - INTERVAL '6 months'),
+('Hibernate Mastery', 'Vlad Mihalcea', 800, CURRENT_DATE - INTERVAL '10 months'),
+
+-- 🟢 OLD BOOKS (> 1 year → allowed)
+('Clean Code', 'Robert C. Martin', 550, CURRENT_DATE - INTERVAL '2 years'),
+('Design Patterns', 'GoF', 750, CURRENT_DATE - INTERVAL '3 years'),
+('Effective Java', 'Joshua Bloch', 650, CURRENT_DATE - INTERVAL '5 years');
