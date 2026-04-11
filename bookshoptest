@@ -1,0 +1,118 @@
+@Test
+void getAllBooks_whenBooksExist_returnsList() {
+    // Arrange
+    when(bookRepo.findAll()).thenReturn(List.of(book));
+
+    // Act
+    List<BookDTO> result = bookService.getAllBooks();
+
+    // Assert
+    assertEquals(1, result.size());
+    verify(bookRepo).findAll();
+}
+
+@Test
+void addBook_whenValidInput_savesAndReturnsDTO() {
+    // Arrange
+    when(bookRepo.save(any(Book.class))).thenReturn(book);
+
+    // Act
+    BookDTO result = bookService.addBook(bookDTO);
+
+    // Assert
+    assertNotNull(result);
+    verify(bookRepo).save(any(Book.class));
+}
+
+@Test
+void updateBook_whenBookExists_updatesAndReturnsDTO() {
+    // Arrange
+    when(bookRepo.findById(1L)).thenReturn(Optional.of(book));
+    when(bookRepo.save(any(Book.class))).thenReturn(book);
+
+    bookDTO.setTitle("Updated");
+
+    // Act
+    BookDTO result = bookService.updateBook(1L, bookDTO);
+
+    // Assert
+    assertEquals("Updated", result.getTitle());
+    verify(bookRepo).save(any(Book.class));
+}
+
+@Test
+void updateBook_whenBookNotFound_throwsResourceNotFoundException() {
+    // Arrange
+    when(bookRepo.findById(1L)).thenReturn(Optional.empty());
+
+    // Act & Assert
+    assertThrows(ResourceNotFoundException.class,
+        () -> bookService.updateBook(1L, bookDTO));
+
+    verify(bookRepo, never()).save(any());
+}
+
+@Test
+void updateBook_whenPartialFieldsProvided_updatesOnlyGivenFields() {
+    // Arrange
+    when(bookRepo.findById(1L)).thenReturn(Optional.of(book));
+    when(bookRepo.save(any(Book.class))).thenReturn(book);
+
+    bookDTO.setTitle("New Title");
+    bookDTO.setAuthor(null);
+
+    // Act
+    BookDTO result = bookService.updateBook(1L, bookDTO);
+
+    // Assert
+    assertEquals("New Title", result.getTitle());
+    assertEquals("John", result.getAuthor()); // unchanged
+}
+
+@Test
+void deleteBook_whenValidDate_deletesSuccessfully() {
+    // Arrange
+    when(bookRepo.findById(1L)).thenReturn(Optional.of(book));
+
+    // Act
+    bookService.deleteBook(1L);
+
+    // Assert
+    verify(bookRepo).delete(book);
+}
+
+@Test
+void deleteBook_whenWithinOneWeek_throwsException() {
+    // Arrange
+    book.setCreatedAt(LocalDate.now().minusDays(3));
+    when(bookRepo.findById(1L)).thenReturn(Optional.of(book));
+
+    // Act & Assert
+    assertThrows(BookDeletionNotAllowedException.class,
+        () -> bookService.deleteBook(1L));
+
+    verify(bookRepo, never()).delete(any());
+}
+
+@Test
+void deleteBook_whenOlderThanOneYear_throwsException() {
+    // Arrange
+    book.setCreatedAt(LocalDate.now().minusYears(2));
+    when(bookRepo.findById(1L)).thenReturn(Optional.of(book));
+
+    // Act & Assert
+    assertThrows(BookDeletionNotAllowedException.class,
+        () -> bookService.deleteBook(1L));
+
+    verify(bookRepo, never()).delete(any());
+}
+
+@Test
+void deleteBook_whenBookNotFound_throwsResourceNotFoundException() {
+    // Arrange
+    when(bookRepo.findById(1L)).thenReturn(Optional.empty());
+
+    // Act & Assert
+    assertThrows(ResourceNotFoundException.class,
+        () -> bookService.deleteBook(1L));
+}
