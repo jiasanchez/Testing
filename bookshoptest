@@ -1,3 +1,8 @@
+/**
+ * Method: getAllBooks
+ * Scenario: Books exist in the repository
+ * Expected: Returns a non-empty list of BookDTO
+ */
 @Test
 void getAllBooks_whenBooksExist_returnsList() {
     // Arrange
@@ -11,6 +16,11 @@ void getAllBooks_whenBooksExist_returnsList() {
     verify(bookRepo).findAll();
 }
 
+/**
+ * Method: addBook
+ * Scenario: Valid BookDTO is provided
+ * Expected: Book is saved and returned as DTO
+ */
 @Test
 void addBook_whenValidInput_savesAndReturnsDTO() {
     // Arrange
@@ -24,6 +34,11 @@ void addBook_whenValidInput_savesAndReturnsDTO() {
     verify(bookRepo).save(any(Book.class));
 }
 
+/**
+ * Method: updateBook
+ * Scenario: Book exists and valid update data is provided
+ * Expected: Book is updated and returned as DTO
+ */
 @Test
 void updateBook_whenBookExists_updatesAndReturnsDTO() {
     // Arrange
@@ -40,6 +55,11 @@ void updateBook_whenBookExists_updatesAndReturnsDTO() {
     verify(bookRepo).save(any(Book.class));
 }
 
+/**
+ * Method: updateBook
+ * Scenario: Book does not exist in repository
+ * Expected: ResourceNotFoundException is thrown
+ */
 @Test
 void updateBook_whenBookNotFound_throwsResourceNotFoundException() {
     // Arrange
@@ -69,6 +89,11 @@ void updateBook_whenPartialFieldsProvided_updatesOnlyGivenFields() {
     assertEquals("John", result.getAuthor()); // unchanged
 }
 
+/**
+ * Method: deleteBook
+ * Scenario: Book exists and is within allowed deletion period
+ * Expected: Book is successfully deleted
+ */
 @Test
 void deleteBook_whenValidDate_deletesSuccessfully() {
     // Arrange
@@ -81,6 +106,11 @@ void deleteBook_whenValidDate_deletesSuccessfully() {
     verify(bookRepo).delete(book);
 }
 
+/**
+ * Method: deleteBook
+ * Scenario: Book was created less than one week ago
+ * Expected: BookDeletionNotAllowedException is thrown
+ */
 @Test
 void deleteBook_whenWithinOneWeek_throwsException() {
     // Arrange
@@ -94,6 +124,11 @@ void deleteBook_whenWithinOneWeek_throwsException() {
     verify(bookRepo, never()).delete(any());
 }
 
+/**
+ * Method: deleteBook
+ * Scenario: Book was created more than one year ago
+ * Expected: BookDeletionNotAllowedException is thrown
+ */
 @Test
 void deleteBook_whenOlderThanOneYear_throwsException() {
     // Arrange
