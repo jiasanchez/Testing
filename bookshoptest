@@ -1,3 +1,14 @@
+Functional Requirements
+The Spring Boot API must support the following operations:
+1.	Create a Book
+2.	Read a Book
+3.	Update a Book
+4.	Delete a Book 
+o	A book can be deleted only if it was created at least one (1) week ago
+o	A book cannot be deleted if it is older than one (1) year
+o	If the above conditions are not met, the delete operation must fail with an appropriate error message
+
+
 /**
  * Method: getAllBooks
  * Scenario: Books exist in the repository
